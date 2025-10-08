@@ -1,4 +1,4 @@
-﻿namespace ScreenPlayers
+﻿namespace CavRn.ScreenPlayers
 {
     using Eco.Core.Items;
     using Eco.Gameplay.Components.Auth;
@@ -68,7 +68,7 @@
     [Ecopedia("Housing Objects", "Living Room", createAsSubPage: true)]
     [Tag("Housing")]
     [Weight(2000)]
-    [Tag(nameof(SurfaceTags.CanBeOnRug))]
+    [Tag(nameof(SurfaceTags.CanBeOnSurface))]
     public class FlatScreenTelevisionItem : WorldObjectItem<FlatScreenTelevisionObject>
     {
         protected override OccupancyContext GetOccupancyContext => new SideAttachedContext( 0  | DirectionAxisFlags.Down , WorldObject.GetOccupancyInfo(this.WorldObjectType));

@@ -1,6 +1,6 @@
 ﻿using Eco.Core.Controller;
 
-namespace ScreenPlayers
+namespace CavRn.ScreenPlayers
 {
     using Eco.Core.Items;
     using Eco.Gameplay.Components.Auth;
@@ -70,7 +70,7 @@ namespace ScreenPlayers
     [Ecopedia("Housing Objects", "Cultural", createAsSubPage: true)]
     [Tag("Housing")]
     [Weight(2000)]
-    [Tag(nameof(SurfaceTags.CanBeOnRug))]
+    [Tag(nameof(SurfaceTags.CanBeOnSurface))]
     public class VideoProjectorItem : WorldObjectItem<VideoProjectorObject>, IPersistentData
     {
         protected override OccupancyContext GetOccupancyContext => new SideAttachedContext( 0  | DirectionAxisFlags.Down , WorldObject.GetOccupancyInfo(this.WorldObjectType));

@@ -1,6 +1,6 @@
 ﻿using Eco.Shared.Localization;
 
-namespace ScreenPlayers
+namespace CavRn.ScreenPlayers
 {
     using Eco.Core.Controller;
     using Eco.Gameplay.Interactions.Interactors;
@@ -11,13 +11,13 @@ namespace ScreenPlayers
     using Eco.Shared.Serialization;
     using Eco.Shared.SharedTypes;
 
-    [Serialized, CreateComponentTabLoc("Video And Sound", true), HasIcon, LocDescription("Customize videos and audio settings.")]
-    public class VideoComponent : WorldObjectComponent
+    [Serialized, HasIcon, CreateComponentTabLoc("Video And Audio", true), LocDescription("Customize video and audio settings.")]
+    public class VideoBaseWithoutInteractionComponent : WorldObjectComponent
     {
         public override WorldObjectComponentClientAvailability Availability => WorldObjectComponentClientAvailability.Always;
-        [Serialized] private bool isRunning;
+        [Serialized] public bool isRunning;
 
-        [Serialized] private string url = "";
+        [Serialized] protected string url = "";
         [Autogen, SyncToView, AutoRPC] public string Url
         {
             get => this.url;
@@ -26,22 +26,6 @@ namespace ScreenPlayers
                 this.url = value;
 				this.Parent.SetAnimatedState("URL", this.url);
             }
-        }
-
-        [Interaction(InteractionTrigger.RightClick, "Restart", modifier: InteractionModifier.Shift, authRequired: AccessType.ConsumerAccess)]
-        public void Restart(Player player, InteractionTriggerInfo trigger, InteractionTarget target)
-        {
-            this.isRunning = true;
-            this.Parent.SetAnimatedState("URL", this.url);
-            this.Parent.TriggerAnimatedEvent("Restart");
-        }
-
-        [Interaction(InteractionTrigger.RightClick, "Resume", authRequired: AccessType.ConsumerAccess, DisallowedEnvVars = new[] { nameof(isRunning) })]
-        [Interaction(InteractionTrigger.RightClick, "Pause", authRequired: AccessType.ConsumerAccess, RequiredEnvVars = new[] { nameof(isRunning) })]
-        public void PauseOrResume(Player player, InteractionTriggerInfo trigger, InteractionTarget target)
-        {
-            this.isRunning = !this.isRunning;
-            this.Parent.SetAnimatedState("IsRunning", this.isRunning);
         }
 
         public virtual void Initialize(int volumeInit = 50, int maxDistanceInit = 16)
@@ -59,9 +43,14 @@ namespace ScreenPlayers
             this.Parent.SetAnimatedState("Volume", (float)this.volume / 100);
             this.Parent.SetAnimatedState("MaxDistance", this.maxDistance);
             this.Parent.SetAnimatedState("URL", this.url);
+
+            if (this.isRunning)
+            {
+                this.Parent.SetAnimatedState("Start", this.isRunning);
+            }
         }
 
-        [Serialized] private int volume;
+        [Serialized] protected int volume;
         [Autogen, SyncToView, AutoRPC] public int Volume
         {
             get => this.volume;
@@ -82,7 +71,7 @@ namespace ScreenPlayers
             }
         }
 
-        [Serialized] private int maxDistance;
+        [Serialized] protected int maxDistance;
         [Autogen, SyncToView, AutoRPC] public int MaxDistance
         {
             get => this.maxDistance;
@@ -102,10 +91,60 @@ namespace ScreenPlayers
                 this.Parent.SetAnimatedState("MaxDistance", this.maxDistance);
             }
         }
+
+        protected void InternalStop()
+        {
+            this.isRunning = false;
+            this.Parent.SetAnimatedState("Start", this.isRunning);
+            this.Parent.TriggerAnimatedEvent("Stop");
+        }
+
+        protected void InternalStart()
+        {
+            this.isRunning = !this.isRunning;
+            this.Parent.SetAnimatedState("Start", this.isRunning);
+        }
     }
 
-    [Serialized, CreateComponentTabLoc("Cinema", true), HasIcon, LocDescription("Customize video and audio settings.")]
-    public class CinemaComponent : VideoComponent
+    [Serialized, HasIcon, CreateComponentTabLoc("Video And Audio", true), LocDescription("Customize video and audio settings.")]
+    public class VideoBaseComponent : VideoBaseWithoutInteractionComponent
+    {
+        [Interaction(InteractionTrigger.RightClick, "Stop", modifier: InteractionModifier.Shift, authRequired: AccessType.ConsumerAccess)]
+        public void Stop(Player player, InteractionTriggerInfo trigger, InteractionTarget target)
+        {
+            this.InternalStop();
+        }
+
+        [Interaction(InteractionTrigger.RightClick, "Start", authRequired: AccessType.ConsumerAccess)]
+        public void Start(Player player, InteractionTriggerInfo trigger, InteractionTarget target)
+        {
+            this.InternalStart();
+        }
+    }
+
+    [Serialized, HasIcon, CreateComponentTabLoc("Vehicle Screen", true), LocDescription("Customize video and audio settings.")]
+    public class VehicleScreenComponent : VideoBaseWithoutInteractionComponent
+    {
+        [RPC]
+        public void Stop(Player player, InteractionTriggerInfo trigger, InteractionTarget target)
+        {
+            this.InternalStop();
+        }
+
+        [RPC]
+        public void Start(Player player, InteractionTriggerInfo trigger, InteractionTarget target)
+        {
+            this.InternalStart();
+        }
+    }
+
+    [Serialized, HasIcon, CreateComponentTabLoc("Video", true), LocDescription("Customize video and audio settings.")]
+    public class VideoComponent : VideoBaseComponent
+    {
+    }
+
+    [Serialized, HasIcon, CreateComponentTabLoc("Cinema", true), LocDescription("Customize video and audio settings.")]
+    public class CinemaComponent : VideoBaseComponent
     {
         public override void Initialize(int volumeInit = 50, int maxDistanceInit = 16)
         {
@@ -135,8 +174,8 @@ namespace ScreenPlayers
         }
     }
 
-    [Serialized, CreateComponentTabLoc("Music", true), HasIcon, LocDescription("Customize audio settings.")]
-    public class MusicComponent : VideoComponent
+    [Serialized, HasIcon, CreateComponentTabLoc("Music", true), LocDescription("Customize audio settings.")]
+    public class MusicComponent : VideoBaseComponent
     {
         public override void Initialize(int volumeInit = 50, int maxDistanceInit = 16)
         {

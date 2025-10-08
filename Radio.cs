@@ -1,4 +1,4 @@
-﻿namespace ScreenPlayers
+﻿namespace CavRn.ScreenPlayers
 {
     using Eco.Core.Items;
     using Eco.Gameplay.Components.Auth;
@@ -59,7 +59,7 @@
     [LocDisplayName("Radio")]
     [LocDescription("A radio to play your favorite songs with your mates.")]
     [Weight(500)]
-    [Tag(nameof(SurfaceTags.CanBeOnRug))]
+    [Tag(nameof(SurfaceTags.CanBeOnSurface))]
     public class RadioItem : WorldObjectItem<RadioObject>
     {
         protected override OccupancyContext GetOccupancyContext => new SideAttachedContext( 0  | DirectionAxisFlags.Down , WorldObject.GetOccupancyInfo(this.WorldObjectType));
