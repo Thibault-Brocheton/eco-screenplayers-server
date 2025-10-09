@@ -52,7 +52,7 @@ namespace CavRn.ScreenPlayers
             this.GetComponent<PartsComponent>().Config(() => LocString.Empty, new PartInfo[] {
                 new() { TypeName = nameof(LightBulbItem), Quantity = 1}
             });
-            this.GetComponent<VideoComponent>().Initialize(50, 20);
+            this.GetComponent<CinemaComponent>().Initialize(50, 16, 6);
         }
 
         static VideoProjectorObject()

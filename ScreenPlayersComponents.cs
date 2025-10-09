@@ -1,4 +1,5 @@
-﻿using Eco.Shared.Localization;
+﻿using Eco.Gameplay.Systems.EnvVars;
+using Eco.Shared.Localization;
 
 namespace CavRn.ScreenPlayers
 {
@@ -15,7 +16,8 @@ namespace CavRn.ScreenPlayers
     public class VideoBaseWithoutInteractionComponent : WorldObjectComponent
     {
         public override WorldObjectComponentClientAvailability Availability => WorldObjectComponentClientAvailability.Always;
-        [Serialized] public bool isRunning;
+        [Serialized, SyncToView, Notify, EnvVar] public bool VideoStarted { get; set; }
+        [Serialized, SyncToView, Notify, EnvVar] public bool VideoPaused  { get; set; }
 
         [Serialized] protected string url = "";
         [Autogen, SyncToView, AutoRPC] public string Url
@@ -44,10 +46,16 @@ namespace CavRn.ScreenPlayers
             this.Parent.SetAnimatedState("MaxDistance", this.maxDistance);
             this.Parent.SetAnimatedState("URL", this.url);
 
-            if (this.isRunning)
+            this.Parent.SetAnimatedState("VideoStarted", this.VideoStarted);
+            this.Parent.SetAnimatedState("VideoPaused", this.VideoPaused);
+
+            this.Parent.OnEnableChange.Add(() =>
             {
-                this.Parent.SetAnimatedState("Start", this.isRunning);
-            }
+                if (!this.Parent.Enabled)
+                {
+                    this.InternalStartStop(true);
+                }
+            });
         }
 
         [Serialized] protected int volume;
@@ -92,33 +100,38 @@ namespace CavRn.ScreenPlayers
             }
         }
 
-        protected void InternalStop()
+        protected void InternalStartStop(bool forceStop = false)
         {
-            this.isRunning = false;
-            this.Parent.SetAnimatedState("Start", this.isRunning);
-            this.Parent.TriggerAnimatedEvent("Stop");
+            this.VideoStarted = !forceStop && !this.VideoStarted;
+            this.Changed(nameof(this.VideoStarted));
+            this.Parent.SetAnimatedState("VideoStarted", this.VideoStarted);
+
+            this.VideoPaused = !this.VideoStarted;
+            this.Changed(nameof(this.VideoPaused));
+            this.Parent.SetAnimatedState("VideoPaused", this.VideoPaused);
         }
 
-        protected void InternalStart()
+        protected void InternalPauseResume()
         {
-            this.isRunning = !this.isRunning;
-            this.Parent.SetAnimatedState("Start", this.isRunning);
+            this.VideoPaused = !this.VideoPaused;
+            this.Changed(nameof(this.VideoPaused));
+            this.Parent.SetAnimatedState("VideoPaused", this.VideoPaused);
         }
     }
 
     [Serialized, HasIcon, CreateComponentTabLoc("Video And Audio", true), LocDescription("Customize video and audio settings.")]
     public class VideoBaseComponent : VideoBaseWithoutInteractionComponent
     {
-        [Interaction(InteractionTrigger.RightClick, "Stop", modifier: InteractionModifier.Shift, authRequired: AccessType.ConsumerAccess)]
-        public void Stop(Player player, InteractionTriggerInfo trigger, InteractionTarget target)
+        [Interaction(InteractionTrigger.RightClick, "Start/Stop", modifier: InteractionModifier.Shift, authRequired: AccessType.ConsumerAccess)]
+        public void StartStop(Player player, InteractionTriggerInfo trigger, InteractionTarget target)
         {
-            this.InternalStop();
+            this.InternalStartStop();
         }
 
-        [Interaction(InteractionTrigger.RightClick, "Start", authRequired: AccessType.ConsumerAccess)]
-        public void Start(Player player, InteractionTriggerInfo trigger, InteractionTarget target)
+        [Interaction(InteractionTrigger.RightClick, "Pause/Resume", authRequired: AccessType.ConsumerAccess)]
+        public void PauseResume(Player player, InteractionTriggerInfo trigger, InteractionTarget target)
         {
-            this.InternalStart();
+            this.InternalPauseResume();
         }
     }
 
@@ -126,15 +139,15 @@ namespace CavRn.ScreenPlayers
     public class VehicleScreenComponent : VideoBaseWithoutInteractionComponent
     {
         [RPC]
-        public void Stop(Player player, InteractionTriggerInfo trigger, InteractionTarget target)
+        public void StartStop(Player player, InteractionTriggerInfo trigger, InteractionTarget target)
         {
-            this.InternalStop();
+            this.InternalStartStop();
         }
 
         [RPC]
-        public void Start(Player player, InteractionTriggerInfo trigger, InteractionTarget target)
+        public void PauseResume(Player player, InteractionTriggerInfo trigger, InteractionTarget target)
         {
-            this.InternalStart();
+            this.InternalPauseResume();
         }
     }
 
@@ -146,8 +159,11 @@ namespace CavRn.ScreenPlayers
     [Serialized, HasIcon, CreateComponentTabLoc("Cinema", true), LocDescription("Customize video and audio settings.")]
     public class CinemaComponent : VideoBaseComponent
     {
-        public override void Initialize(int volumeInit = 50, int maxDistanceInit = 16)
+        private int maxMode = 10;
+
+        public void Initialize(int volumeInit = 50, int maxDistanceInit = 16, int maxModeInit = 6)
         {
+            this.maxMode = maxModeInit;
             this.Parent.SetAnimatedState("Mode", this.projectorDistance);
             base.Initialize(volumeInit, maxDistanceInit);
         }
@@ -158,9 +174,9 @@ namespace CavRn.ScreenPlayers
             get => this.projectorDistance;
             set
             {
-                if (value > 7)
+                if (value > this.maxMode)
                 {
-                    value = 7;
+                    value = this.maxMode;
                 }
 
                 if (value < 0)
