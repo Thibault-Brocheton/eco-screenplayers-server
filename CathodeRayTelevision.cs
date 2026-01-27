@@ -1,4 +1,6 @@
-﻿namespace CavRn.ScreenPlayers
+﻿using Eco.Core.Controller;
+
+namespace CavRn.ScreenPlayers
 {
     using Eco.Core.Items;
     using Eco.Gameplay.Components.Auth;
@@ -68,7 +70,7 @@
     [Tag("Housing")]
     [Weight(2000)]
     [Tag(nameof(SurfaceTags.CanBeOnSurface))]
-    public class CathodeRayTelevisionItem : WorldObjectItem<CathodeRayTelevisionObject>
+    public class CathodeRayTelevisionItem : WorldObjectItem<CathodeRayTelevisionObject>, IPersistentData
     {
         protected override OccupancyContext GetOccupancyContext => new SideAttachedContext( 0  | DirectionAxisFlags.Down , WorldObject.GetOccupancyInfo(this.WorldObjectType));
         public override HomeFurnishingValue HomeValue => homeValue;
@@ -80,7 +82,7 @@
             TypeForRoomLimit                        = Localizer.DoStr("CathodeRayTelevision"),
             DiminishingReturnMultiplier             = 0.1f
         };
-
+        [Serialized, SyncToView, NewTooltipChildren(CacheAs.Instance, flags: TTFlags.AllowNonControllerTypeForChildren)] public object? PersistentData { get; set; }
         [NewTooltip(CacheAs.SubType, 7)] public static LocString PowerConsumptionTooltip() => Localizer.Do($"Consumes: {Text.Info(300)}w of {new MechanicalPower().Name} power.");
     }
 
@@ -97,9 +99,9 @@
 
                 ingredients: new List<IngredientElement>
                 {
-                    new IngredientElement(typeof(SteelPlateItem), 8, typeof(MechanicsSkill), typeof(MechanicsLavishResourcesTalent)),
-                    new IngredientElement(typeof(BasicCircuitItem), 4, typeof(MechanicsSkill), typeof(MechanicsLavishResourcesTalent)),
-                    new IngredientElement(typeof(RadiatorItem), 1, typeof(MechanicsSkill), typeof(MechanicsLavishResourcesTalent)),
+                    new IngredientElement(typeof(IronPlateItem), 8, typeof(MechanicsSkill), typeof(MechanicsLavishResourcesTalent)),
+                    new IngredientElement(typeof(CopperWiringItem), 20, typeof(MechanicsSkill), typeof(MechanicsLavishResourcesTalent)),
+                    new IngredientElement(typeof(LightBulbItem), 1, true),
                     new IngredientElement(typeof(GlassItem), 4, typeof(MechanicsSkill), typeof(MechanicsLavishResourcesTalent)),
                 },
 

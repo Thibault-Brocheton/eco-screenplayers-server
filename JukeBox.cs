@@ -1,4 +1,6 @@
-﻿namespace CavRn.ScreenPlayers
+﻿using Eco.Core.Controller;
+
+namespace CavRn.ScreenPlayers
 {
     using Eco.Core.Items;
     using Eco.Gameplay.Components.Auth;
@@ -69,7 +71,7 @@
     [Tag("Housing")]
     [Weight(2000)]
     [Tag(nameof(SurfaceTags.CanBeOnSurface))]
-    public class JukeBoxItem : WorldObjectItem<JukeBoxObject>
+    public class JukeBoxItem : WorldObjectItem<JukeBoxObject>, IPersistentData
     {
         protected override OccupancyContext GetOccupancyContext => new SideAttachedContext( 0  | DirectionAxisFlags.Down , WorldObject.GetOccupancyInfo(this.WorldObjectType));
         public override HomeFurnishingValue HomeValue => homeValue;
@@ -81,7 +83,7 @@
             TypeForRoomLimit                        = Localizer.DoStr("Music"),
             DiminishingReturnMultiplier             = 0.1f
         };
-
+        [Serialized, SyncToView, NewTooltipChildren(CacheAs.Instance, flags: TTFlags.AllowNonControllerTypeForChildren)] public object? PersistentData { get; set; }
         [NewTooltip(CacheAs.SubType, 7)] public static LocString PowerConsumptionTooltip() => Localizer.Do($"Consumes: {Text.Info(200)}w of {new MechanicalPower().Name} power.");
     }
 

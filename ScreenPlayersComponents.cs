@@ -1,4 +1,8 @@
-﻿using Eco.Gameplay.Systems.EnvVars;
+﻿using System.ComponentModel;
+using Eco.Core.Utils;
+using Eco.Gameplay.Items;
+using Eco.Gameplay.Systems.EnvVars;
+using Eco.Gameplay.Systems.NewTooltip;
 using Eco.Shared.Localization;
 
 namespace CavRn.ScreenPlayers
@@ -12,39 +16,68 @@ namespace CavRn.ScreenPlayers
     using Eco.Shared.Serialization;
     using Eco.Shared.SharedTypes;
 
-    [Serialized, HasIcon, CreateComponentTabLoc("Video And Audio", true), LocDescription("Customize video and audio settings.")]
-    public class VideoBaseWithoutInteractionComponent : WorldObjectComponent
+    [Serialized]
+    public class VideoBaseItemData : IController, INotifyPropertyChanged, IClearRequestHandler
+    {
+        #region IController
+        public event PropertyChangedEventHandler? PropertyChanged;
+        int            controllerID;
+        public ref int ControllerID => ref this.controllerID;
+        #endregion
+
+        [Serialized, SyncToView] public string Url { get; set; } = "";
+        [Serialized, SyncToView] public int Volume { get; set; } = -1;
+        [Serialized, SyncToView] public int MaxDistance { get; set; } = -1;
+
+        public bool HasDataThatCanBeCleared => Url != "";
+
+        public VideoBaseWithoutInteractionComponent? Parent { get; set; }
+
+        public Result TryHandleClearRequest(Player player)
+        {
+            this.Url = "";
+            return Result.Succeeded;
+        }
+    }
+
+    [Serialized, HasIcon("ModulesComponent"), CreateComponentTabLoc("Video And Audio", true), LocDescription("Customize video and audio settings.")]
+    public class VideoBaseWithoutInteractionComponent : WorldObjectComponent, IPersistentData
     {
         public override WorldObjectComponentClientAvailability Availability => WorldObjectComponentClientAvailability.Always;
         [Serialized, SyncToView, Notify, EnvVar] public bool VideoStarted { get; set; }
         [Serialized, SyncToView, Notify, EnvVar] public bool VideoPaused  { get; set; }
+        [Serialized, SyncToView, NewTooltipChildren(CacheAs.Instance)] public VideoBaseItemData VideoBaseItemData { get; set; } = new();
 
-        [Serialized] protected string url = "";
+        public object PersistentData { get => this.VideoBaseItemData; set => this.VideoBaseItemData = value as VideoBaseItemData ?? new VideoBaseItemData(); }
+
         [Autogen, SyncToView, AutoRPC] public string Url
         {
-            get => this.url;
+            get => this.VideoBaseItemData.Url;
             set
             {
-                this.url = value;
-				this.Parent.SetAnimatedState("URL", this.url);
+                this.VideoBaseItemData.Url = value;
+				this.Parent.SetAnimatedState("URL", value);
             }
         }
 
         public virtual void Initialize(int volumeInit = 50, int maxDistanceInit = 16)
         {
-            if (this.volume == 0)
+            this.VideoBaseItemData ??= new VideoBaseItemData();
+            this.VideoBaseItemData.Parent = this;
+
+            if (this.Volume == -1)
             {
-                this.volume = volumeInit;
+                this.Volume = volumeInit;
             }
 
-            if (this.maxDistance == 0)
+            if (this.MaxDistance == -1)
             {
-                this.maxDistance = maxDistanceInit;
+                this.MaxDistance = maxDistanceInit;
             }
 
-            this.Parent.SetAnimatedState("Volume", (float)this.volume / 100);
-            this.Parent.SetAnimatedState("MaxDistance", this.maxDistance);
-            this.Parent.SetAnimatedState("URL", this.url);
+            this.Parent.SetAnimatedState("Volume", (float)this.Volume / 100);
+            this.Parent.SetAnimatedState("MaxDistance", this.MaxDistance);
+            this.Parent.SetAnimatedState("URL", this.Url);
 
             this.Parent.SetAnimatedState("VideoStarted", this.VideoStarted);
             this.Parent.SetAnimatedState("VideoPaused", this.VideoPaused);
@@ -58,10 +91,9 @@ namespace CavRn.ScreenPlayers
             });
         }
 
-        [Serialized] protected int volume;
         [Autogen, SyncToView, AutoRPC] public int Volume
         {
-            get => this.volume;
+            get => this.VideoBaseItemData.Volume;
             set
             {
                 if (value > 100)
@@ -74,15 +106,14 @@ namespace CavRn.ScreenPlayers
                     value = 0;
                 }
 
-                this.volume = value;
-                this.Parent.SetAnimatedState("Volume", (float)this.volume / 100);
+                this.VideoBaseItemData.Volume = value;
+                this.Parent.SetAnimatedState("Volume", (float)value / 100);
             }
         }
 
-        [Serialized] protected int maxDistance;
         [Autogen, SyncToView, AutoRPC] public int MaxDistance
         {
-            get => this.maxDistance;
+            get => this.VideoBaseItemData.MaxDistance;
             set
             {
                 if (value > 32)
@@ -95,13 +126,18 @@ namespace CavRn.ScreenPlayers
                     value = 0;
                 }
 
-                this.maxDistance = value;
-                this.Parent.SetAnimatedState("MaxDistance", this.maxDistance);
+                this.VideoBaseItemData.MaxDistance = value;
+                this.Parent.SetAnimatedState("MaxDistance", value);
             }
         }
 
         protected void InternalStartStop(bool forceStop = false)
         {
+            if ((!forceStop || !this.VideoStarted) && !this.Parent.Enabled)
+            {
+                return;
+            }
+
             this.VideoStarted = !forceStop && !this.VideoStarted;
             this.Changed(nameof(this.VideoStarted));
             this.Parent.SetAnimatedState("VideoStarted", this.VideoStarted);
@@ -113,6 +149,11 @@ namespace CavRn.ScreenPlayers
 
         protected void InternalPauseResume()
         {
+            if (!this.VideoPaused && !this.Parent.Enabled)
+            {
+                return;
+            }
+
             this.VideoPaused = !this.VideoPaused;
             this.Changed(nameof(this.VideoPaused));
             this.Parent.SetAnimatedState("VideoPaused", this.VideoPaused);
@@ -122,13 +163,13 @@ namespace CavRn.ScreenPlayers
     [Serialized, HasIcon, CreateComponentTabLoc("Video And Audio", true), LocDescription("Customize video and audio settings.")]
     public class VideoBaseComponent : VideoBaseWithoutInteractionComponent
     {
-        [Interaction(InteractionTrigger.RightClick, "Start/Stop", modifier: InteractionModifier.Shift, authRequired: AccessType.ConsumerAccess)]
+        [Interaction(InteractionTrigger.RightClick, "Start/Stop", modifier: InteractionModifier.Shift, authRequired: AccessType.FullAccess)]
         public void StartStop(Player player, InteractionTriggerInfo trigger, InteractionTarget target)
         {
             this.InternalStartStop();
         }
 
-        [Interaction(InteractionTrigger.RightClick, "Pause/Resume", authRequired: AccessType.ConsumerAccess)]
+        [Interaction(InteractionTrigger.RightClick, "Pause/Resume", authRequired: AccessType.FullAccess)]
         public void PauseResume(Player player, InteractionTriggerInfo trigger, InteractionTarget target)
         {
             this.InternalPauseResume();

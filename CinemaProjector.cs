@@ -35,6 +35,7 @@ namespace CavRn.ScreenPlayers
     [RequireComponent(typeof(MinimapComponent))]
     [RequireComponent(typeof(CinemaComponent))]
     [RequireComponent(typeof(PartsComponent))]
+    [RepairRequiresSkill(typeof(ElectronicsSkill), 2)]
     [Tag("Usable")]
     [Ecopedia("Housing Objects", "Cultural", subPageName: "Cinema Projector Item")]
     public class CinemaProjectorObject : WorldObject, IRepresentsItem
@@ -85,7 +86,7 @@ namespace CavRn.ScreenPlayers
         };
 
         [NewTooltip(CacheAs.SubType, 7)] public static LocString PowerConsumptionTooltip() => Localizer.Do($"Consumes: {Text.Info(600)}w of {new ElectricPower().Name} power.");
-        [Serialized, SyncToView, NewTooltipChildren(CacheAs.Instance, flags: TTFlags.AllowNonControllerTypeForChildren)] public object PersistentData { get; set; }
+        [Serialized, SyncToView, NewTooltipChildren(CacheAs.Instance, flags: TTFlags.AllowNonControllerTypeForChildren)] public object? PersistentData { get; set; }
     }
 
     [RequiresSkill(typeof(ElectronicsSkill), 3)]

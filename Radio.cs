@@ -1,4 +1,6 @@
-﻿namespace CavRn.ScreenPlayers
+﻿using Eco.Core.Controller;
+
+namespace CavRn.ScreenPlayers
 {
     using Eco.Core.Items;
     using Eco.Gameplay.Components.Auth;
@@ -60,10 +62,10 @@
     [LocDescription("A radio to play your favorite songs with your mates.")]
     [Weight(500)]
     [Tag(nameof(SurfaceTags.CanBeOnSurface))]
-    public class RadioItem : WorldObjectItem<RadioObject>
+    public class RadioItem : WorldObjectItem<RadioObject>, IPersistentData
     {
         protected override OccupancyContext GetOccupancyContext => new SideAttachedContext( 0  | DirectionAxisFlags.Down , WorldObject.GetOccupancyInfo(this.WorldObjectType));
-
+        [Serialized, SyncToView, NewTooltipChildren(CacheAs.Instance, flags: TTFlags.AllowNonControllerTypeForChildren)] public object? PersistentData { get; set; }
         [NewTooltip(CacheAs.SubType, 7)] public static LocString PowerConsumptionTooltip() => Localizer.Do($"Consumes: {Text.Info(10)}w of {new MechanicalPower().Name} power.");
     }
 
