@@ -1,4 +1,5 @@
 ﻿using Eco.Core.Plugins.Interfaces;
+using Eco.Shared.Localization;
 
 namespace CavRn.ScreenPlayers
 {

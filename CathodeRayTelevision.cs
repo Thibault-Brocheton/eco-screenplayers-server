@@ -1,7 +1,6 @@
-﻿using Eco.Core.Controller;
-
-namespace CavRn.ScreenPlayers
+﻿namespace CavRn.ScreenPlayers
 {
+    using Eco.Core.Controller;
     using Eco.Core.Items;
     using Eco.Gameplay.Components.Auth;
     using Eco.Gameplay.Components;

@@ -4,13 +4,29 @@
         <TargetFramework>net8.0-windows</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Eco.Core\Eco.Core.csproj" />
-    <ProjectReference Include="..\Eco.Gameplay\Eco.Gameplay.csproj" />
-    <ProjectReference Include="..\Eco.Mods\Eco.Mods.csproj" />
-    <ProjectReference Include="..\Eco.Server\Eco.Server.csproj" />
+    <Compile Include="ScreenPlayersPlugin.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\\index.html"   LogicalName="ScreenPlayers.Assets.index.html" />
+    <EmbeddedResource Include="Assets\\index.css"    LogicalName="ScreenPlayers.Assets.index.css" />
+    <EmbeddedResource Include="Assets\\index.js"     LogicalName="ScreenPlayers.Assets.index.js" />
+    <EmbeddedResource Include="Assets\\eco-icon.png" LogicalName="ScreenPlayers.Assets.eco-icon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="**\\*.cs" Exclude="ScreenPlayersPlugin.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Eco.Core\Eco.Core.csproj" />
+    <ProjectReference Include="..\..\Eco.Gameplay\Eco.Gameplay.csproj" />
+    <ProjectReference Include="..\..\Eco.Mods\Eco.Mods.csproj" />
+    <ProjectReference Include="..\..\Eco.Server\Eco.Server.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

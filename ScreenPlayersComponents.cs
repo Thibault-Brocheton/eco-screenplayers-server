@@ -1,26 +1,54 @@
-﻿using System.ComponentModel;
-using Eco.Core.Utils;
-using Eco.Gameplay.Items;
-using Eco.Gameplay.Systems.EnvVars;
-using Eco.Gameplay.Systems.NewTooltip;
-using Eco.Shared.Localization;
+// Copyright (c) Strange Loop Games. All rights reserved.
+// See LICENSE file in the project root for full license information.
 
 namespace CavRn.ScreenPlayers
 {
     using Eco.Core.Controller;
+    using Eco.Core.Utils;
     using Eco.Gameplay.Interactions.Interactors;
+    using Eco.Gameplay.Items;
     using Eco.Gameplay.Objects;
     using Eco.Gameplay.Players;
+    using Eco.Gameplay.Systems.EnvVars;
+    using Eco.Gameplay.Systems.NewTooltip;
     using Eco.Shared.Items;
+    using Eco.Shared.Localization;
     using Eco.Shared.Networking;
     using Eco.Shared.Serialization;
     using Eco.Shared.SharedTypes;
+    using System.ComponentModel;
+    using System.Linq;
+    using System.Text;
+    using System;
+
+    public interface IScreenPlayersService
+    {
+        bool EnableWebUploader { get; }
+        bool AllowOnlyLocalUrl { get; }
+        string GetWebServerBaseUrl();
+        string GetUploaderUrl();
+        string GetPublicUrl(Guid id);
+        ScreenPlayersFileInfo[] GetValidatedFiles();
+    }
+
+    public static class ScreenPlayersRegistry
+    {
+        public static IScreenPlayersService Obj;
+    }
+
+    public class ScreenPlayersFileInfo
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; } = "";
+        public string CreatorName { get; set; } = "";
+    }
 
     [Serialized]
     public class VideoBaseItemData : IController, INotifyPropertyChanged, IClearRequestHandler
     {
         #region IController
-        public event PropertyChangedEventHandler? PropertyChanged;
+        #pragma warning disable CS0067
+        public event PropertyChangedEventHandler PropertyChanged;
         int            controllerID;
         public ref int ControllerID => ref this.controllerID;
         #endregion
@@ -29,9 +57,9 @@ namespace CavRn.ScreenPlayers
         [Serialized, SyncToView] public int Volume { get; set; } = -1;
         [Serialized, SyncToView] public int MaxDistance { get; set; } = -1;
 
-        public bool HasDataThatCanBeCleared => Url != "";
+        public bool HasDataThatCanBeCleared => this.Url != "";
 
-        public VideoBaseWithoutInteractionComponent? Parent { get; set; }
+        public VideoBaseWithoutInteractionComponent Parent { get; set; }
 
         public Result TryHandleClearRequest(Player player)
         {
@@ -44,21 +72,61 @@ namespace CavRn.ScreenPlayers
     public class VideoBaseWithoutInteractionComponent : WorldObjectComponent, IPersistentData
     {
         public override WorldObjectComponentClientAvailability Availability => WorldObjectComponentClientAvailability.Always;
+        [SyncToView] public override string IconName => "ModulesComponent";
+
         [Serialized, SyncToView, Notify, EnvVar] public bool VideoStarted { get; set; }
         [Serialized, SyncToView, Notify, EnvVar] public bool VideoPaused  { get; set; }
         [Serialized, SyncToView, NewTooltipChildren(CacheAs.Instance)] public VideoBaseItemData VideoBaseItemData { get; set; } = new();
 
         public object PersistentData { get => this.VideoBaseItemData; set => this.VideoBaseItemData = value as VideoBaseItemData ?? new VideoBaseItemData(); }
 
-        [Autogen, SyncToView, AutoRPC] public string Url
+        [Autogen, RPC, UITypeName("BigButton"), LocDescription("📤 Open Web Uploader")]
+        public void OpenUploader(Player player)
+        {
+            var url = ScreenPlayersRegistry.Obj?.GetUploaderUrl();
+            if (string.IsNullOrWhiteSpace(url))
+            {
+                player.MsgLoc($"Web uploader is not available on this server.");
+                return;
+            }
+
+            player.User.OpenWebpage(url);
+        }
+
+        [Serialized] private string urlValidationError = "";
+        [SyncToView, Autogen, PropReadOnly, UITypeName("StringDisplay")]
+        public LocString UrlValidationError => Localizer.NotLocalizedStr(this.urlValidationError);
+
+        [Autogen, SyncToView, AutoRPC, LocDescription("Enter the URL of your video or audio file.")]
+        public string Url
         {
             get => this.VideoBaseItemData.Url;
             set
             {
-                this.VideoBaseItemData.Url = value;
-				this.Parent.SetAnimatedState("URL", value);
+                var nextValue = value ?? string.Empty;
+
+                //Clear previous error
+                this.urlValidationError = "";
+
+                //Validate URL if AllowOnlyLocalUrl is enabled
+                if (ScreenPlayersRegistry.Obj is { } service && service.AllowOnlyLocalUrl && nextValue.Length > 0)
+                {
+                    var baseUrl = service.GetWebServerBaseUrl();
+                    if (!string.IsNullOrWhiteSpace(baseUrl) &&
+                        !nextValue.StartsWith(baseUrl, StringComparison.OrdinalIgnoreCase))
+                    {
+                        this.urlValidationError = $"❌ Only local URLs are allowed on this server. Expected: {baseUrl}...";
+                        this.Changed(nameof(this.UrlValidationError));
+                        return;
+                    }
+                }
+
+                this.VideoBaseItemData.Url = nextValue;
+				this.Parent.SetAnimatedState("URL", nextValue);
             }
         }
+
+
 
         public virtual void Initialize(int volumeInit = 50, int maxDistanceInit = 16)
         {

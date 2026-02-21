@@ -1,0 +1,44 @@
+﻿<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="#000000" />
+        <link
+                rel="shortcut icon"
+                type="image/png"
+                href="/plugins/screenplayers/eco-icon.png"
+        />
+        <title>ScreenPlayers Uploader</title>
+        <script type="module" crossorigin src="index.js"></script>
+        <link rel="stylesheet" href="index.css">
+    </head>
+    <body>
+        <main class="app">
+            <header class="header">
+                <h1>🎬 ScreenPlayers Uploader</h1>
+                <p class="subtitle">Uploadez vos vidéos MP4 et musiques MP3, gérez vos médias et partagez-les dans le jeu !</p>
+            </header>
+
+            <section class="card">
+                <h2>📤 Upload un fichier</h2>
+                <div class="row">
+                    <input id="fileInput" type="file" accept=".mp4,.mp3" />
+                    <button id="uploadBtn" type="button">Uploader</button>
+                </div>
+                <div id="uploadStatus" class="status"></div>
+            </section>
+
+            <section class="card">
+                <h2>📁 Mes fichiers</h2>
+                <div id="myFiles" class="file-list"></div>
+            </section>
+
+            <section id="adminSection" class="card hidden">
+                <h2>👑 Tous les fichiers (Admin)</h2>
+                <div id="allFiles" class="file-list"></div>
+            </section>
+        </main>
+
+        <div id="snackbar" class="snackbar"></div>
+    </body>
+</html>
