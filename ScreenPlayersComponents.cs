@@ -17,30 +17,17 @@ namespace CavRn.ScreenPlayers
     using Eco.Shared.Serialization;
     using Eco.Shared.SharedTypes;
     using System.ComponentModel;
-    using System.Linq;
-    using System.Text;
     using System;
 
     public interface IScreenPlayersService
     {
-        bool EnableWebUploader { get; }
         bool AllowOnlyLocalUrl { get; }
         string GetWebServerBaseUrl();
-        string GetUploaderUrl();
-        string GetPublicUrl(Guid id);
-        ScreenPlayersFileInfo[] GetValidatedFiles();
     }
 
     public static class ScreenPlayersRegistry
     {
         public static IScreenPlayersService Obj;
-    }
-
-    public class ScreenPlayersFileInfo
-    {
-        public Guid Id { get; set; }
-        public string Name { get; set; } = "";
-        public string CreatorName { get; set; } = "";
     }
 
     [Serialized]
@@ -80,24 +67,29 @@ namespace CavRn.ScreenPlayers
 
         public object PersistentData { get => this.VideoBaseItemData; set => this.VideoBaseItemData = value as VideoBaseItemData ?? new VideoBaseItemData(); }
 
-        [Autogen, RPC, UITypeName("BigButton"), LocDescription("📤 Open Web Uploader")]
+        [Autogen, RPC, Sort(1), UITypeName("BigButton"), LocDescription("Open Uploader")]
         public void OpenUploader(Player player)
         {
-            var url = ScreenPlayersRegistry.Obj?.GetUploaderUrl();
-            if (string.IsNullOrWhiteSpace(url))
-            {
-                player.MsgLoc($"Web uploader is not available on this server.");
-                return;
-            }
+            player.Client?.RPC("OpenServerWebpage", "plugin/ScreenPlayersPlugin");
+        }
 
-            player.User.OpenWebpage(url);
+        [Autogen, RPC, Sort(3), LocDescription("Start / Stop")]
+        public void StartOrStop(Player player)
+        {
+            this.InternalStartStop();
+        }
+
+        [Autogen, RPC, Sort(4), LocDescription("Pause / Resume")]
+        public void PauseOrResume(Player player)
+        {
+            this.InternalPauseResume();
         }
 
         [Serialized] private string urlValidationError = "";
         [SyncToView, Autogen, PropReadOnly, UITypeName("StringDisplay")]
         public LocString UrlValidationError => Localizer.NotLocalizedStr(this.urlValidationError);
 
-        [Autogen, SyncToView, AutoRPC, LocDescription("Enter the URL of your video or audio file.")]
+        [Autogen, SyncToView, AutoRPC, Sort(2), LocDescription("Enter the URL of your video or audio file.")]
         public string Url
         {
             get => this.VideoBaseItemData.Url;
@@ -125,8 +117,6 @@ namespace CavRn.ScreenPlayers
 				this.Parent.SetAnimatedState("URL", nextValue);
             }
         }
-
-
 
         public virtual void Initialize(int volumeInit = 50, int maxDistanceInit = 16)
         {
@@ -159,7 +149,7 @@ namespace CavRn.ScreenPlayers
             });
         }
 
-        [Autogen, SyncToView, AutoRPC] public int Volume
+        [Autogen, SyncToView, AutoRPC, Sort(5)] public int Volume
         {
             get => this.VideoBaseItemData.Volume;
             set
@@ -179,7 +169,7 @@ namespace CavRn.ScreenPlayers
             }
         }
 
-        [Autogen, SyncToView, AutoRPC] public int MaxDistance
+        [Autogen, SyncToView, AutoRPC, Sort(6)] public int MaxDistance
         {
             get => this.VideoBaseItemData.MaxDistance;
             set
@@ -302,9 +292,5 @@ namespace CavRn.ScreenPlayers
     [Serialized, HasIcon, CreateComponentTabLoc("Music", true), LocDescription("Customize audio settings.")]
     public class MusicComponent : VideoBaseComponent
     {
-        public override void Initialize(int volumeInit = 50, int maxDistanceInit = 16)
-        {
-            base.Initialize(volumeInit, maxDistanceInit);
-        }
     }
 }

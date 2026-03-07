@@ -26,6 +26,7 @@
         public bool RequireValidation { get; set; } = false;
         public bool AllowOnlyLocalUrl { get; set; } = false;
         public int MaxUploadPerUser { get; set; } = 5;
+        public int MaxFileSizeInMB { get; set; } = 15;
     }
 
     public class ScreenPlayersPlugin : Singleton<ScreenPlayersPlugin>, IWebPlugin, IModKitPlugin, IInitializablePlugin, IShutdownablePlugin, IConfigurablePlugin
@@ -102,32 +103,37 @@
         internal static string ValidatedDir => Path.Combine(Directory.GetCurrentDirectory(), "WebClient", "WebBin", "ScreenPlayers");
         internal static string NonValidatedDir => Path.Combine(Directory.GetCurrentDirectory(), "Storage", "ScreenPlayers", "NonValidated");
 
-        internal static string GetStoredPath(Guid id, bool validated) =>
-            Path.Combine(validated ? ValidatedDir : NonValidatedDir, $"{id}.mp4");
+        internal static string GetStoredPath(Guid id, bool validated) => Path.Combine(validated ? ValidatedDir : NonValidatedDir, $"{id}.mp4");
 
         internal static string? GetWebServerBaseUrl()
         {
             //Priority 1: Use WebServerUrl if configured (this is what clients use)
             var webUrl = Eco.Plugins.Networking.NetworkManager.Config.WebServerUrl;
             if (!string.IsNullOrWhiteSpace(webUrl))
-                return webUrl.TrimEnd('/');
+                return webUrl.Trim().TrimEnd('/');
 
-            //Priority 2: Build URL from WebServerPort
+            //Priority 2: Build URL from RemoteAddress and WebServerPort
             var port = Eco.Plugins.Networking.NetworkManager.Config.WebServerPort;
 
-            //Try to get the remote address
             var remoteAddress = Eco.Plugins.Networking.NetworkManager.Config.RemoteAddress;
-            if (!string.IsNullOrWhiteSpace(remoteAddress) && remoteAddress != "*")
+            if (!string.IsNullOrWhiteSpace(remoteAddress) && remoteAddress != "*" && remoteAddress != "0.0.0.0" && remoteAddress != "Any")
             {
                 //If it already has a protocol, use it as-is
                 if (remoteAddress.Contains("://", StringComparison.Ordinal))
-                    return remoteAddress.TrimEnd('/');
+                    return remoteAddress.Trim().TrimEnd('/');
 
                 //Otherwise build http://address:port
                 return $"http://{remoteAddress}:{port}";
             }
 
-            //Priority 3: Use localhost as fallback
+            //Priority 3: Build URL from IPAddress and WebServerPort
+            var ipAddress = Eco.Plugins.Networking.NetworkManager.Config.IPAddress;
+            if (!string.IsNullOrWhiteSpace(ipAddress) && ipAddress != "*" && ipAddress != "0.0.0.0" && ipAddress != "Any")
+            {
+                return $"http://{ipAddress}:{port}";
+            }
+
+            //Priority 4: Use localhost as fallback
             return $"http://localhost:{port}";
         }
 
@@ -136,18 +142,12 @@
             if (!Obj.Config.EnableWebUploader)
                 return null;
 
-            var baseUrl = GetWebServerBaseUrl();
-            if (string.IsNullOrWhiteSpace(baseUrl))
-                return null;
-
-            return $"{baseUrl}/plugin/{nameof(ScreenPlayersPlugin)}";
+            return $"{GetWebServerBaseUrl()}/plugin/ScreenPlayersPlugin";
         }
 
         internal static string GetPublicUrl(Guid id)
         {
-            var relative = $"/ScreenPlayers/{id}.mp4";
-            var baseUrl = GetWebServerBaseUrl();
-            return string.IsNullOrWhiteSpace(baseUrl) ? relative : $"{baseUrl}{relative}";
+            return $"{GetWebServerBaseUrl()}/ScreenPlayers/{id}.mp4";
         }
 
         internal static VideoAudioFileDto ToDto(VideoAudioFile file) =>
@@ -241,23 +241,7 @@
         public bool AllowOnlyLocalUrl => ScreenPlayersPlugin.Obj.Config.AllowOnlyLocalUrl;
 
         public string? GetWebServerBaseUrl() => ScreenPlayersPlugin.GetWebServerBaseUrl();
-
-        public string? GetUploaderUrl() => ScreenPlayersPlugin.GetUploaderUrl();
-
         public string GetPublicUrl(Guid id) => ScreenPlayersPlugin.GetPublicUrl(id);
-
-        public ScreenPlayersFileInfo[] GetValidatedFiles()
-        {
-            return ScreenPlayersPlugin.Files
-                .Where(f => f.Validated)
-                .Select(f => new ScreenPlayersFileInfo
-                {
-                    Id = f.Id,
-                    Name = f.Name,
-                    CreatorName = f.CreatorName
-                })
-                .ToArray();
-        }
     }
 
     [Route("api/v1/plugins/screenplayers")]
@@ -266,6 +250,12 @@
     public class ScreenPlayersController : Controller
     {
         private User GetUserFromContext() => (this.HttpContext.User.Identity as EcoUserIdentity)!.User;
+
+        [HttpGet("config")]
+        public ActionResult GetConfig()
+        {
+            return this.Ok(new { maxFileSizeInMB = ScreenPlayersPlugin.Obj.Config.MaxFileSizeInMB });
+        }
 
         [HttpGet("allFiles")]
         [Authorize(Policy = PolicyNames.RequireAdmin)]
@@ -335,15 +325,14 @@
         }
 
         [HttpPost("uploadFile")]
-        [RequestSizeLimit(12 * 1024 * 1024)]
         public ActionResult<VideoAudioFileDto> UploadFile([FromForm] IFormFile? file)
         {
             if (file == null || file.Length == 0)
                 return this.BadRequest("Missing file.");
 
-            const long maxBytes = 10L * 1024 * 1024;
+            long maxBytes = ScreenPlayersPlugin.Obj.Config.MaxFileSizeInMB * 1024 * 1024;
             if (file.Length > maxBytes)
-                return this.BadRequest("File too large (max 10 MB).");
+                return this.BadRequest($"File too large (max {ScreenPlayersPlugin.Obj.Config.MaxFileSizeInMB} MB).");
 
             var user = this.GetUserFromContext();
 

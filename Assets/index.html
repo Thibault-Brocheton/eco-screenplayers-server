@@ -16,25 +16,26 @@
         <main class="app">
             <header class="header">
                 <h1>🎬 ScreenPlayers Uploader</h1>
-                <p class="subtitle">Uploadez vos vidéos MP4 et musiques MP3, gérez vos médias et partagez-les dans le jeu !</p>
+                <p class="subtitle">Upload your MP4 videos and MP3 music, manage your media and share them in-game!</p>
             </header>
 
             <section class="card">
-                <h2>📤 Upload un fichier</h2>
+                <h2>📤 Upload a file</h2>
+                <p id="uploadHint" class="hint">Max file size: 15 MB. MP3 uploads require <strong>ffmpeg</strong> installed on the server host.</p>
                 <div class="row">
                     <input id="fileInput" type="file" accept=".mp4,.mp3" />
-                    <button id="uploadBtn" type="button">Uploader</button>
+                    <button id="uploadBtn" type="button">Upload</button>
                 </div>
                 <div id="uploadStatus" class="status"></div>
             </section>
 
             <section class="card">
-                <h2>📁 Mes fichiers</h2>
+                <h2>📁 My files</h2>
                 <div id="myFiles" class="file-list"></div>
             </section>
 
             <section id="adminSection" class="card hidden">
-                <h2>👑 Tous les fichiers (Admin)</h2>
+                <h2>👑 All files (Admin)</h2>
                 <div id="allFiles" class="file-list"></div>
             </section>
         </main>

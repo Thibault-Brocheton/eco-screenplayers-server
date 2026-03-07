@@ -55,7 +55,7 @@ const renderFiles = (container, files, showCreator) => {
 
     const badge = document.createElement("span");
     badge.className = `file-badge ${isValidated ? "validated" : "pending"}`;
-    badge.textContent = isValidated ? "Validé" : "En attente";
+    badge.textContent = isValidated ? "Validated" : "Pending";
     fileName.appendChild(badge);
 
     const meta = document.createElement("div");
@@ -75,19 +75,19 @@ const renderFiles = (container, files, showCreator) => {
       open.href = fileUrl;
       open.target = "_blank";
       open.rel = "noopener noreferrer";
-      open.textContent = "Ouvrir";
+      open.textContent = "Open";
       open.className = "link-button";
       actions.appendChild(open);
 
       const copy = document.createElement("button");
       copy.type = "button";
-      copy.textContent = "Copier URL";
+      copy.textContent = "Copy URL";
       copy.addEventListener("click", async () => {
         try {
           //Try modern clipboard API first
           if (navigator.clipboard && navigator.clipboard.writeText) {
             await navigator.clipboard.writeText(fileUrl);
-            showSnackbar("✅ URL copiée !");
+            showSnackbar("✅ URL copied!");
           } else {
             //Fallback for older browsers or non-HTTPS contexts
             const textarea = document.createElement("textarea");
@@ -99,13 +99,13 @@ const renderFiles = (container, files, showCreator) => {
             const success = document.execCommand("copy");
             document.body.removeChild(textarea);
             if (success) {
-              showSnackbar("✅ URL copiée !");
+              showSnackbar("✅ URL copied!");
             } else {
-              showSnackbar("❌ Erreur lors de la copie");
+              showSnackbar("❌ Failed to copy URL");
             }
           }
         } catch (err) {
-          showSnackbar("❌ Erreur lors de la copie");
+          showSnackbar("❌ Failed to copy URL");
         }
       });
       actions.appendChild(copy);
@@ -114,7 +114,7 @@ const renderFiles = (container, files, showCreator) => {
     if (showCreator && !isValidated) {
       const validate = document.createElement("button");
       validate.type = "button";
-      validate.textContent = "Valider";
+      validate.textContent = "Validate";
       validate.addEventListener("click", async () => {
         await validateFile(file.Id);
       });
@@ -123,9 +123,9 @@ const renderFiles = (container, files, showCreator) => {
 
     const del = document.createElement("button");
     del.type = "button";
-    del.textContent = "Supprimer";
+    del.textContent = "Delete";
     del.addEventListener("click", async () => {
-      if (!confirm(`Supprimer ${getDisplayName(file)} ?`)) return;
+      if (!confirm(`Delete ${getDisplayName(file)}?`)) return;
       await deleteFile(file.Id);
     });
 
@@ -187,13 +187,20 @@ const loadAllFiles = async () => {
   }
 };
 
+let maxFileSizeInMB = 15; // default fallback
+
 const uploadFile = async () => {
   if (!fileInput.files.length) {
-    setStatus("Veuillez sélectionner un fichier à uploader.", true);
+    setStatus("Please select a file to upload.", true);
     return;
   }
 
-  setStatus("Upload en cours...");
+  if (fileInput.files[0].size > maxFileSizeInMB * 1024 * 1024) {
+    setStatus(`File is too large. Maximum allowed size is ${maxFileSizeInMB} MB.`, true);
+    return;
+  }
+
+  setStatus("Uploading...");
   const form = new FormData();
   form.append("file", fileInput.files[0]);
 
@@ -203,30 +210,30 @@ const uploadFile = async () => {
       body: form,
     });
     fileInput.value = "";
-    setStatus("Upload terminé avec succès !");
+    setStatus("Upload successful!");
     await refreshLists();
   } catch (err) {
-    setStatus(err.message || "Échec de l'upload.", true);
+    setStatus(err.message || "Upload failed.", true);
   }
 };
 
 const deleteFile = async (id) => {
   try {
     await fetchJson(`${apiBase}/DeleteFile?fileId=${encodeURIComponent(id)}`);
-    setStatus("Fichier supprimé.");
+    setStatus("File deleted.");
     await refreshLists();
   } catch (err) {
-    setStatus(err.message || "Échec de la suppression.", true);
+    setStatus(err.message || "Deletion failed.", true);
   }
 };
 
 const validateFile = async (id) => {
   try {
     await fetchJson(`${apiBase}/ValidateFile?fileId=${encodeURIComponent(id)}`);
-    setStatus("Fichier validé avec succès !");
+    setStatus("File validated successfully!");
     await refreshLists();
   } catch (err) {
-    setStatus(err.message || "Échec de la validation.", true);
+    setStatus(err.message || "Validation failed.", true);
   }
 };
 
@@ -237,6 +244,19 @@ const refreshLists = async () => {
 
 uploadBtn.addEventListener("click", uploadFile);
 
-refreshLists().catch((err) => {
-  setStatus(err.message || "Échec du chargement des fichiers.", true);
+const uploadHint = document.getElementById("uploadHint");
+
+const init = async () => {
+  try {
+    const config = await fetchJson(`${apiBase}/config`);
+    if (config?.maxFileSizeInMB) {
+      maxFileSizeInMB = config.maxFileSizeInMB;
+      uploadHint.innerHTML = `Max file size: ${maxFileSizeInMB} MB. MP3 uploads require <strong>ffmpeg</strong> installed on the server host.`;
+    }
+  } catch {}
+  await refreshLists();
+};
+
+init().catch((err) => {
+  setStatus(err.message || "Failed to load files.", true);
 });
