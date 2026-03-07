@@ -35,7 +35,7 @@ Play your favorite videos and music directly in Eco! This mod adds televisions, 
 - Projectors use Light Bulbs as replaceable parts
 
 **Vehicle support:**
-- Optional connector for the [HotWheels](https://mod.io/g/eco/m/hotwheels) mod — adds a screen to the Tesla Model 3
+- Optional connector for the [HotWheels](https://mod.io/g/eco/m/hot-wheels) mod — adds a screen to the Tesla Model 3
 
 ## ⚙️ Configuration
 
@@ -52,7 +52,7 @@ The plugin configuration is editable from the server admin panel under **Mods > 
 ## 💻 Installation
 
 1. Download the `CavRnMods` folder and copy it inside your `Mods/UserCode` folder in your Eco server.
-2. If you want vehicle screen support with the [HotWheels](https://mod.io/g/eco/m/hotwheels) mod, also include `HotWheelsConnector.cs`. Otherwise, don't add it.
+2. If you want vehicle screen support with the [HotWheels](https://mod.io/g/eco/m/hot-wheels) mod, also include `HotWheelsConnector.cs`. Otherwise, don't add it.
 3. *(Optional)* Install [FFmpeg](https://ffmpeg.org/) on your server to enable `.mp3` upload support.
 4. Restart your server.
 
@@ -60,4 +60,4 @@ The plugin configuration is editable from the server admin panel under **Mods > 
 
 - Eco v12.0.0+
 - *(Optional)* FFmpeg — required for `.mp3` to `.mp4` conversion
-- *(Optional)* [HotWheels](https://mod.io/g/eco/m/hotwheels) mod — for vehicle screen support
+- *(Optional)* [HotWheels](https://mod.io/g/eco/m/hot-wheels) mod — for vehicle screen support
