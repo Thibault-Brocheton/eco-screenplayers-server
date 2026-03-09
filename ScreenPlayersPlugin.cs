@@ -325,6 +325,8 @@
         }
 
         [HttpPost("uploadFile")]
+        [DisableRequestSizeLimit]
+        [RequestFormLimits(MultipartBodyLengthLimit = Int32.MaxValue)]
         public ActionResult<VideoAudioFileDto> UploadFile([FromForm] IFormFile? file)
         {
             if (file == null || file.Length == 0)
@@ -378,19 +380,19 @@
                     $"\"{targetPath}\""
                 );
 
-                var process = new Process
-                {
-                    StartInfo = new ProcessStartInfo
-                    {
-                        FileName = "ffmpeg",
-                        Arguments = args,
-                        CreateNoWindow = true,
-                        UseShellExecute = false
-                    }
-                };
-
                 try
                 {
+                    var process = new Process
+                    {
+                        StartInfo = new ProcessStartInfo
+                        {
+                            FileName = "ffmpeg",
+                            Arguments = args,
+                            CreateNoWindow = true,
+                            UseShellExecute = false
+                        }
+                    };
+
                     process.Start();
                     process.WaitForExit(30_000);
                     if (process.ExitCode != 0 || !System.IO.File.Exists(targetPath))
