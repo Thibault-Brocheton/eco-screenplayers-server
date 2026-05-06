@@ -97,10 +97,10 @@ namespace CavRn.ScreenPlayers
 
                 ingredients: new List<IngredientElement>
                 {
-                    new IngredientElement("WoodBoard", 16, typeof(BasicEngineeringSkill), typeof(BasicEngineeringLavishResourcesTalent)),
-                    new IngredientElement(typeof(IronBarItem), 8, typeof(BasicEngineeringSkill), typeof(BasicEngineeringLavishResourcesTalent)),
-                    new IngredientElement(typeof(CopperBarItem), 4, typeof(BasicEngineeringSkill), typeof(BasicEngineeringLavishResourcesTalent)),
-                    new IngredientElement(typeof(GoldBarItem), 2, typeof(BasicEngineeringSkill), typeof(BasicEngineeringLavishResourcesTalent)),
+                    new IngredientElement("WoodBoard", 16, typeof(BasicEngineeringSkill)),
+                    new IngredientElement(typeof(IronBarItem), 8, typeof(BasicEngineeringSkill)),
+                    new IngredientElement(typeof(CopperBarItem), 4, typeof(BasicEngineeringSkill)),
+                    new IngredientElement(typeof(GoldBarItem), 2, typeof(BasicEngineeringSkill)),
                 },
 
                 items: new List<CraftingElement>
@@ -112,7 +112,7 @@ namespace CavRn.ScreenPlayers
 
             this.LaborInCalories = CreateLaborInCaloriesValue(120, typeof(BasicEngineeringSkill));
 
-            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(RecordPlayerRecipe), start: 10, skillType: typeof(BasicEngineeringSkill), typeof(BasicEngineeringFocusedSpeedTalent), typeof(BasicEngineeringParallelSpeedTalent));
+            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(RecordPlayerRecipe), start: 10, skillType: typeof(BasicEngineeringSkill));
 
             this.Initialize(displayText: Localizer.DoStr("RecordPlayer"), recipeType: typeof(RecordPlayerRecipe));
 

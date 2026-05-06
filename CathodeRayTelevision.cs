@@ -98,10 +98,10 @@
 
                 ingredients: new List<IngredientElement>
                 {
-                    new IngredientElement(typeof(IronPlateItem), 8, typeof(MechanicsSkill), typeof(MechanicsLavishResourcesTalent)),
-                    new IngredientElement(typeof(CopperWiringItem), 20, typeof(MechanicsSkill), typeof(MechanicsLavishResourcesTalent)),
+                    new IngredientElement(typeof(IronPlateItem), 8, typeof(MechanicsSkill)),
+                    new IngredientElement(typeof(CopperWiringItem), 20, typeof(MechanicsSkill)),
                     new IngredientElement(typeof(LightBulbItem), 1, true),
-                    new IngredientElement(typeof(GlassItem), 4, typeof(MechanicsSkill), typeof(MechanicsLavishResourcesTalent)),
+                    new IngredientElement(typeof(GlassItem), 4, typeof(MechanicsSkill)),
                 },
 
                 items: new List<CraftingElement>
@@ -113,7 +113,7 @@
 
             this.LaborInCalories = CreateLaborInCaloriesValue(160, typeof(MechanicsSkill));
 
-            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(CathodeRayTelevisionRecipe), start: 8, skillType: typeof(MechanicsSkill), typeof(MechanicsFocusedSpeedTalent), typeof(MechanicsParallelSpeedTalent));
+            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(CathodeRayTelevisionRecipe), start: 8, skillType: typeof(MechanicsSkill));
 
             this.Initialize(displayText: Localizer.DoStr("CathodeRayTelevision"), recipeType: typeof(CathodeRayTelevisionRecipe));
 

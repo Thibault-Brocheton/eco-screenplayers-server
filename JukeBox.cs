@@ -100,11 +100,11 @@ namespace CavRn.ScreenPlayers
 
                 ingredients: new List<IngredientElement>
                 {
-                    new IngredientElement("Lumber", 16, typeof(MechanicsSkill), typeof(MechanicsLavishResourcesTalent)),
-                    new IngredientElement(typeof(CopperWiringItem), 24, typeof(MechanicsSkill), typeof(MechanicsLavishResourcesTalent)),
-                    new IngredientElement(typeof(ScrewsItem), 32, typeof(MechanicsSkill), typeof(MechanicsLavishResourcesTalent)),
-                    new IngredientElement(typeof(IronPlateItem), 12, typeof(MechanicsSkill), typeof(MechanicsLavishResourcesTalent)),
-                    new IngredientElement(typeof(GlassItem), 6, typeof(MechanicsSkill), typeof(MechanicsLavishResourcesTalent)),
+                    new IngredientElement("Lumber", 16, typeof(MechanicsSkill)),
+                    new IngredientElement(typeof(CopperWiringItem), 24, typeof(MechanicsSkill)),
+                    new IngredientElement(typeof(ScrewsItem), 32, typeof(MechanicsSkill)),
+                    new IngredientElement(typeof(IronPlateItem), 12, typeof(MechanicsSkill)),
+                    new IngredientElement(typeof(GlassItem), 6, typeof(MechanicsSkill)),
                 },
 
                 items: new List<CraftingElement>
@@ -116,7 +116,7 @@ namespace CavRn.ScreenPlayers
 
             this.LaborInCalories = CreateLaborInCaloriesValue(240, typeof(MechanicsSkill));
 
-            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(JukeBoxRecipe), start: 16, skillType: typeof(MechanicsSkill), typeof(MechanicsFocusedSpeedTalent), typeof(MechanicsParallelSpeedTalent));
+            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(JukeBoxRecipe), start: 16, skillType: typeof(MechanicsSkill));
 
             this.Initialize(displayText: Localizer.DoStr("JukeBox"), recipeType: typeof(JukeBoxRecipe));
 

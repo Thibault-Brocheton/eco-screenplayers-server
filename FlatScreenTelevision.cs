@@ -100,10 +100,10 @@ namespace CavRn.ScreenPlayers
 
                 ingredients: new List<IngredientElement>
                 {
-                    new IngredientElement(typeof(SteelPlateItem), 8, typeof(ElectronicsSkill), typeof(ElectronicsLavishResourcesTalent)),
-                    new IngredientElement(typeof(BasicCircuitItem), 4, typeof(ElectronicsSkill), typeof(ElectronicsLavishResourcesTalent)),
-                    new IngredientElement(typeof(RadiatorItem), 1, typeof(ElectronicsSkill), typeof(ElectronicsLavishResourcesTalent)),
-                    new IngredientElement(typeof(GlassItem), 4, typeof(ElectronicsSkill), typeof(ElectronicsLavishResourcesTalent)),
+                    new IngredientElement(typeof(SteelPlateItem), 8, typeof(ElectronicsSkill)),
+                    new IngredientElement(typeof(BasicCircuitItem), 4, typeof(ElectronicsSkill)),
+                    new IngredientElement(typeof(RadiatorItem), 1, typeof(ElectronicsSkill)),
+                    new IngredientElement(typeof(GlassItem), 4, typeof(ElectronicsSkill)),
                 },
 
                 items: new List<CraftingElement>
@@ -115,7 +115,7 @@ namespace CavRn.ScreenPlayers
 
             this.LaborInCalories = CreateLaborInCaloriesValue(120, typeof(ElectronicsSkill));
 
-            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(FlatScreenTelevisionRecipe), start: 12, skillType: typeof(ElectronicsSkill), typeof(ElectronicsFocusedSpeedTalent), typeof(ElectronicsParallelSpeedTalent));
+            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(FlatScreenTelevisionRecipe), start: 12, skillType: typeof(ElectronicsSkill));
 
             this.Initialize(displayText: Localizer.DoStr("FlatScreenTelevision"), recipeType: typeof(FlatScreenTelevisionRecipe));
 

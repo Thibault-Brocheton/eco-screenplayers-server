@@ -102,13 +102,13 @@ namespace CavRn.ScreenPlayers
 
                 ingredients: new List<IngredientElement>
                 {
-                    new IngredientElement(typeof(SteelPlateItem), 12, typeof(ElectronicsSkill), typeof(ElectronicsLavishResourcesTalent)),
-                    new IngredientElement(typeof(BasicCircuitItem), 12, typeof(ElectronicsSkill), typeof(ElectronicsLavishResourcesTalent)),
-                    new IngredientElement(typeof(CopperWiringItem), 8, typeof(ElectronicsSkill), typeof(ElectronicsLavishResourcesTalent)),
-                    new IngredientElement(typeof(RadiatorItem), 3, typeof(ElectronicsSkill), typeof(ElectronicsLavishResourcesTalent)),
-                    new IngredientElement(typeof(GlassItem), 2, typeof(ElectronicsSkill), typeof(ElectronicsLavishResourcesTalent)),
-                    new IngredientElement(typeof(HeatSinkItem), 4, typeof(ElectronicsSkill), typeof(ElectronicsLavishResourcesTalent)),
-                    new IngredientElement(typeof(ScrewsItem), 8, typeof(ElectronicsSkill), typeof(ElectronicsLavishResourcesTalent)),
+                    new IngredientElement(typeof(SteelPlateItem), 12, typeof(ElectronicsSkill)),
+                    new IngredientElement(typeof(BasicCircuitItem), 12, typeof(ElectronicsSkill)),
+                    new IngredientElement(typeof(CopperWiringItem), 8, typeof(ElectronicsSkill)),
+                    new IngredientElement(typeof(RadiatorItem), 3, typeof(ElectronicsSkill)),
+                    new IngredientElement(typeof(GlassItem), 2, typeof(ElectronicsSkill)),
+                    new IngredientElement(typeof(HeatSinkItem), 4, typeof(ElectronicsSkill)),
+                    new IngredientElement(typeof(ScrewsItem), 8, typeof(ElectronicsSkill)),
                     new IngredientElement(typeof(LightBulbItem), 1, true),
                 },
 
@@ -121,7 +121,7 @@ namespace CavRn.ScreenPlayers
 
             this.LaborInCalories = CreateLaborInCaloriesValue(220, typeof(ElectronicsSkill));
 
-            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(VideoProjectorRecipe), start: 24, skillType: typeof(ElectronicsSkill), typeof(ElectronicsFocusedSpeedTalent), typeof(ElectronicsParallelSpeedTalent));
+            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(VideoProjectorRecipe), start: 24, skillType: typeof(ElectronicsSkill));
 
             this.Initialize(displayText: Localizer.DoStr("VideoProjector"), recipeType: typeof(VideoProjectorRecipe));
 
