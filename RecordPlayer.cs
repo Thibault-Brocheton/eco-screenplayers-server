@@ -41,7 +41,7 @@ namespace CavRn.ScreenPlayers
     public class RecordPlayerObject : WorldObject, IRepresentsItem
     {
         public virtual Type RepresentedItemType => typeof(RecordPlayerItem);
-        public override LocString DisplayName => Localizer.DoStr("RecordPlayer");
+        public override LocString DisplayName => Localizer.DoStr("Record Player");
         public override TableTextureMode TableTexture => TableTextureMode.Metal;
 
         protected override void Initialize()
@@ -62,11 +62,12 @@ namespace CavRn.ScreenPlayers
     }
 
     [Serialized]
-    [LocDisplayName("RecordPlayer")]
+    [LocDisplayName("Record Player")]
     [LocDescription("A record player to play your favorite songs with your mates.")]
     [Ecopedia("Housing Objects", "Living Room", createAsSubPage: true)]
     [Tag("Housing")]
     [Weight(2000)]
+    [SalvageCost(typeof(CopperScrap), 0.4f, typeof(GoldScrap), 0.2f, typeof(IronScrap), 0.8f, typeof(WoodScrap), 3.2f)]
     [Tag(nameof(SurfaceTags.CanBeOnSurface))]
     public class RecordPlayerItem : WorldObjectItem<RecordPlayerObject>, IPersistentData
     {
@@ -93,14 +94,14 @@ namespace CavRn.ScreenPlayers
             var recipe = new Recipe();
             recipe.Init(
                 name: "RecordPlayer",  //noloc
-                displayName: Localizer.DoStr("RecordPlayer"),
+                displayName: Localizer.DoStr("Record Player"),
 
                 ingredients: new List<IngredientElement>
                 {
-                    new IngredientElement("WoodBoard", 16, typeof(BasicEngineeringSkill)),
-                    new IngredientElement(typeof(IronBarItem), 8, typeof(BasicEngineeringSkill)),
-                    new IngredientElement(typeof(CopperBarItem), 4, typeof(BasicEngineeringSkill)),
-                    new IngredientElement(typeof(GoldBarItem), 2, typeof(BasicEngineeringSkill)),
+                    new IngredientElement("WoodBoard", 8, typeof(BasicEngineeringSkill)),
+                    new IngredientElement(typeof(IronBarItem), 4, typeof(BasicEngineeringSkill)),
+                    new IngredientElement(typeof(CopperBarItem), 2, typeof(BasicEngineeringSkill)),
+                    new IngredientElement(typeof(GoldBarItem), 1, typeof(BasicEngineeringSkill)),
                 },
 
                 items: new List<CraftingElement>
@@ -112,9 +113,9 @@ namespace CavRn.ScreenPlayers
 
             this.LaborInCalories = CreateLaborInCaloriesValue(120, typeof(BasicEngineeringSkill));
 
-            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(RecordPlayerRecipe), start: 10, skillType: typeof(BasicEngineeringSkill));
+            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(RecordPlayerRecipe), start: 5, skillType: typeof(BasicEngineeringSkill));
 
-            this.Initialize(displayText: Localizer.DoStr("RecordPlayer"), recipeType: typeof(RecordPlayerRecipe));
+            this.Initialize(displayText: Localizer.DoStr("Record Player"), recipeType: typeof(RecordPlayerRecipe));
 
             CraftingComponent.AddRecipe(tableType: typeof(WainwrightTableObject), recipeFamily: this);
         }

@@ -41,7 +41,7 @@ namespace CavRn.ScreenPlayers
     public class CinemaProjectorObject : WorldObject, IRepresentsItem
     {
         public virtual Type RepresentedItemType => typeof(CinemaProjectorItem);
-        public override LocString DisplayName => Localizer.DoStr("CinemaProjector");
+        public override LocString DisplayName => Localizer.DoStr("Cinema Projector");
         public override TableTextureMode TableTexture => TableTextureMode.Metal;
 
         protected override void Initialize()
@@ -66,11 +66,12 @@ namespace CavRn.ScreenPlayers
     }
 
     [Serialized]
-    [LocDisplayName("CinemaProjector")]
+    [LocDisplayName("Cinema Projector")]
     [LocDescription("A cinema projector to play your favorite films with your mates.")]
     [Ecopedia("Housing Objects", "Cultural", createAsSubPage: true)]
     [Tag("Housing")]
     [Weight(2500)]
+    [SalvageCost(typeof(CopperScrap), 12.8f, typeof(GlassScrap), 3.0f, typeof(GoldScrap), 1.2f, typeof(IronScrap), 7.2f)]
     [Tag(nameof(SurfaceTags.CanBeOnSurface))]
     public class CinemaProjectorItem : WorldObjectItem<CinemaProjectorObject>, IPersistentData
     {
@@ -98,17 +99,17 @@ namespace CavRn.ScreenPlayers
             var recipe = new Recipe();
             recipe.Init(
                 name: "CinemaProjector",  //noloc
-                displayName: Localizer.DoStr("CinemaProjector"),
+                displayName: Localizer.DoStr("Cinema Projector"),
 
                 ingredients: new List<IngredientElement>
                 {
-                    new IngredientElement(typeof(SteelPlateItem), 12, typeof(ElectronicsSkill)),
-                    new IngredientElement(typeof(BasicCircuitItem), 16, typeof(ElectronicsSkill)),
-                    new IngredientElement(typeof(CopperWiringItem), 12, typeof(ElectronicsSkill)),
-                    new IngredientElement(typeof(RadiatorItem), 6, typeof(ElectronicsSkill)),
-                    new IngredientElement(typeof(GlassItem), 4, typeof(ElectronicsSkill)),
-                    new IngredientElement(typeof(HeatSinkItem), 8, typeof(ElectronicsSkill)),
-                    new IngredientElement(typeof(ScrewsItem), 12, typeof(ElectronicsSkill)),
+                    new IngredientElement(typeof(SteelPlateItem), 4, typeof(ElectronicsSkill)),
+                    new IngredientElement(typeof(BasicCircuitItem), 6, typeof(ElectronicsSkill)),
+                    new IngredientElement(typeof(CopperWiringItem), 6, typeof(ElectronicsSkill)),
+                    new IngredientElement(typeof(RadiatorItem), 1, typeof(ElectronicsSkill)),
+                    new IngredientElement(typeof(GlassItem), 2, typeof(ElectronicsSkill)),
+                    new IngredientElement(typeof(HeatSinkItem), 1, typeof(ElectronicsSkill)),
+                    new IngredientElement(typeof(ScrewsItem), 6, typeof(ElectronicsSkill)),
                     new IngredientElement(typeof(LightBulbItem), 2, true),
                 },
 
@@ -121,9 +122,9 @@ namespace CavRn.ScreenPlayers
 
             this.LaborInCalories = CreateLaborInCaloriesValue(300, typeof(ElectronicsSkill));
 
-            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(CinemaProjectorRecipe), start: 30, skillType: typeof(ElectronicsSkill));
+            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(CinemaProjectorRecipe), start: 15, skillType: typeof(ElectronicsSkill));
 
-            this.Initialize(displayText: Localizer.DoStr("CinemaProjector"), recipeType: typeof(CinemaProjectorRecipe));
+            this.Initialize(displayText: Localizer.DoStr("Cinema Projector"), recipeType: typeof(CinemaProjectorRecipe));
 
             CraftingComponent.AddRecipe(tableType: typeof(ElectronicsAssemblyObject), recipeFamily: this);
         }

@@ -8,7 +8,7 @@ namespace CavRn.ScreenPlayers
         public static ModRegistration Register() => new()
         {
             ModName = "ScreenPlayers",
-            ModDescription = "ScreenPlayers introduces televisions and music players. Play your favorites songs and videos with your friends!",
+            ModDescription = "ScreenPlayers introduces televisions and music players. Play your favorite songs and videos with your friends!",
             ModDisplayName = "Screen Players"
         };
     }

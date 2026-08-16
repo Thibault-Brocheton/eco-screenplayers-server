@@ -41,7 +41,7 @@
     public class CathodeRayTelevisionObject : WorldObject, IRepresentsItem
     {
         public virtual Type RepresentedItemType => typeof(CathodeRayTelevisionItem);
-        public override LocString DisplayName => Localizer.DoStr("CathodeRayTelevision");
+        public override LocString DisplayName => Localizer.DoStr("Cathode Ray Television");
         public override TableTextureMode TableTexture => TableTextureMode.Metal;
 
         protected override void Initialize()
@@ -63,11 +63,12 @@
     }
 
     [Serialized]
-    [LocDisplayName("CathodeRayTelevision")]
+    [LocDisplayName("Cathode Ray Television")]
     [LocDescription("A cathode ray television to play your favorite videos with your mates.")]
     [Ecopedia("Housing Objects", "Living Room", createAsSubPage: true)]
     [Tag("Housing")]
     [Weight(2000)]
+    [SalvageCost(typeof(CopperScrap), 5.3f, typeof(GlassScrap), 3.0f, typeof(IronScrap), 2.0f)]
     [Tag(nameof(SurfaceTags.CanBeOnSurface))]
     public class CathodeRayTelevisionItem : WorldObjectItem<CathodeRayTelevisionObject>, IPersistentData
     {
@@ -78,7 +79,7 @@
             ObjectName                              = typeof(CathodeRayTelevisionObject).UILink(),
             Category                                = HousingConfig.GetRoomCategory("Living Room"),
             BaseValue                               = 5,
-            TypeForRoomLimit                        = Localizer.DoStr("CathodeRayTelevision"),
+            TypeForRoomLimit                        = Localizer.DoStr("Cathode Ray Television"),
             DiminishingReturnMultiplier             = 0.1f
         };
         [Serialized, SyncToView, NewTooltipChildren(CacheAs.Instance, flags: TTFlags.AllowNonControllerTypeForChildren)] public object? PersistentData { get; set; }
@@ -94,12 +95,12 @@
             var recipe = new Recipe();
             recipe.Init(
                 name: "CathodeRayTelevision",  //noloc
-                displayName: Localizer.DoStr("CathodeRayTelevision"),
+                displayName: Localizer.DoStr("Cathode Ray Television"),
 
                 ingredients: new List<IngredientElement>
                 {
-                    new IngredientElement(typeof(IronPlateItem), 8, typeof(MechanicsSkill)),
-                    new IngredientElement(typeof(CopperWiringItem), 20, typeof(MechanicsSkill)),
+                    new IngredientElement(typeof(IronPlateItem), 4, typeof(MechanicsSkill)),
+                    new IngredientElement(typeof(CopperWiringItem), 8, typeof(MechanicsSkill)),
                     new IngredientElement(typeof(LightBulbItem), 1, true),
                     new IngredientElement(typeof(GlassItem), 4, typeof(MechanicsSkill)),
                 },
@@ -113,9 +114,9 @@
 
             this.LaborInCalories = CreateLaborInCaloriesValue(160, typeof(MechanicsSkill));
 
-            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(CathodeRayTelevisionRecipe), start: 8, skillType: typeof(MechanicsSkill));
+            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(CathodeRayTelevisionRecipe), start: 6, skillType: typeof(MechanicsSkill));
 
-            this.Initialize(displayText: Localizer.DoStr("CathodeRayTelevision"), recipeType: typeof(CathodeRayTelevisionRecipe));
+            this.Initialize(displayText: Localizer.DoStr("Cathode Ray Television"), recipeType: typeof(CathodeRayTelevisionRecipe));
 
             CraftingComponent.AddRecipe(tableType: typeof(AssemblyLineObject), recipeFamily: this);
         }

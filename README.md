@@ -1,6 +1,6 @@
 # 🎬 Eco Screen Players
 
-This mod has been developed for Eco version **v12.0.0**
+This mod has been developed for Eco version **v14.0.0**
 
 Play your favorite videos and music directly in Eco! This mod adds televisions, projectors, radios and music players to the game, allowing players to share audio and video content with their friends.
 
@@ -12,7 +12,7 @@ Play your favorite videos and music directly in Eco! This mod adds televisions, 
 |---|---|---|---|---|
 | Radio | Music | Basic Engineering 2 | Wainwright Table | 10w Mechanical |
 | Record Player | Music | Basic Engineering 2 | Wainwright Table | 10w Mechanical |
-| JukeBox | Music | Mechanics 2 | Assembly Line | 200w Mechanical |
+| Jukebox | Music | Mechanics 2 | Assembly Line | 200w Mechanical |
 | Cathode Ray Television | Video | Mechanics 2 | Assembly Line | 300w Mechanical |
 | Flat Screen Television | Video | Electronics 2 | Electronics Assembly | 100w Electric |
 | Video Projector | Video/Cinema | Electronics 2 | Electronics Assembly | 300w Electric |
@@ -33,6 +33,9 @@ Play your favorite videos and music directly in Eco! This mod adds televisions, 
 **Housing values:**
 - All objects provide housing value (Living Room or Cultural category)
 - Projectors use Light Bulbs as replaceable parts
+
+**Salvage costs:**
+- All objects have salvage costs matching the vanilla v14 recycling system, derived from their crafting ingredients
 
 **Vehicle support:**
 - Optional connector for the [HotWheels](https://mod.io/g/eco/m/hot-wheels) mod — adds a screen to the Tesla Model 3
@@ -58,6 +61,6 @@ The plugin configuration is editable from the server admin panel under **Mods > 
 
 ## 📋 Requirements
 
-- Eco v12.0.0+
+- Eco v14.0.0+
 - *(Optional)* FFmpeg — required for `.mp3` to `.mp4` conversion
 - *(Optional)* [HotWheels](https://mod.io/g/eco/m/hot-wheels) mod — for vehicle screen support

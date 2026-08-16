@@ -42,7 +42,7 @@ namespace CavRn.ScreenPlayers
     public class FlatScreenTelevisionObject : WorldObject, IRepresentsItem
     {
         public virtual Type RepresentedItemType => typeof(FlatScreenTelevisionItem);
-        public override LocString DisplayName => Localizer.DoStr("FlatScreenTelevision");
+        public override LocString DisplayName => Localizer.DoStr("Flat Screen Television");
         public override TableTextureMode TableTexture => TableTextureMode.Metal;
 
         protected override void Initialize()
@@ -65,11 +65,12 @@ namespace CavRn.ScreenPlayers
     }
 
     [Serialized]
-    [LocDisplayName("FlatScreenTelevision")]
+    [LocDisplayName("Flat Screen Television")]
     [LocDescription("A flat screen television to play your favorite videos with your mates.")]
     [Ecopedia("Housing Objects", "Living Room", createAsSubPage: true)]
     [Tag("Housing")]
     [Weight(2000)]
+    [SalvageCost(typeof(CopperScrap), 3.8f, typeof(GlassScrap), 2.0f, typeof(GoldScrap), 0.8f, typeof(IronScrap), 6.0f)]
     [Tag(nameof(SurfaceTags.CanBeOnSurface))]
     public class FlatScreenTelevisionItem : WorldObjectItem<FlatScreenTelevisionObject>, IPersistentData
     {
@@ -80,7 +81,7 @@ namespace CavRn.ScreenPlayers
             ObjectName                              = typeof(FlatScreenTelevisionObject).UILink(),
             Category                                = HousingConfig.GetRoomCategory("Living Room"),
             BaseValue                               = 8,
-            TypeForRoomLimit                        = Localizer.DoStr("FlatScreenTelevision"),
+            TypeForRoomLimit                        = Localizer.DoStr("Flat Screen Television"),
             DiminishingReturnMultiplier             = 0.1f
         };
         [Serialized, SyncToView, NewTooltipChildren(CacheAs.Instance, flags: TTFlags.AllowNonControllerTypeForChildren)] public object? PersistentData { get; set; }
@@ -96,11 +97,11 @@ namespace CavRn.ScreenPlayers
             var recipe = new Recipe();
             recipe.Init(
                 name: "FlatScreenTelevision",  //noloc
-                displayName: Localizer.DoStr("FlatScreenTelevision"),
+                displayName: Localizer.DoStr("Flat Screen Television"),
 
                 ingredients: new List<IngredientElement>
                 {
-                    new IngredientElement(typeof(SteelPlateItem), 8, typeof(ElectronicsSkill)),
+                    new IngredientElement(typeof(SteelPlateItem), 4, typeof(ElectronicsSkill)),
                     new IngredientElement(typeof(BasicCircuitItem), 4, typeof(ElectronicsSkill)),
                     new IngredientElement(typeof(RadiatorItem), 1, typeof(ElectronicsSkill)),
                     new IngredientElement(typeof(GlassItem), 4, typeof(ElectronicsSkill)),
@@ -115,9 +116,9 @@ namespace CavRn.ScreenPlayers
 
             this.LaborInCalories = CreateLaborInCaloriesValue(120, typeof(ElectronicsSkill));
 
-            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(FlatScreenTelevisionRecipe), start: 12, skillType: typeof(ElectronicsSkill));
+            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(FlatScreenTelevisionRecipe), start: 6, skillType: typeof(ElectronicsSkill));
 
-            this.Initialize(displayText: Localizer.DoStr("FlatScreenTelevision"), recipeType: typeof(FlatScreenTelevisionRecipe));
+            this.Initialize(displayText: Localizer.DoStr("Flat Screen Television"), recipeType: typeof(FlatScreenTelevisionRecipe));
 
             CraftingComponent.AddRecipe(tableType: typeof(ElectronicsAssemblyObject), recipeFamily: this);
         }

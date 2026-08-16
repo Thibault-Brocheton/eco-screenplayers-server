@@ -41,7 +41,7 @@ namespace CavRn.ScreenPlayers
     public class JukeBoxObject : WorldObject, IRepresentsItem
     {
         public virtual Type RepresentedItemType => typeof(JukeBoxItem);
-        public override LocString DisplayName => Localizer.DoStr("JukeBox");
+        public override LocString DisplayName => Localizer.DoStr("Jukebox");
         public override TableTextureMode TableTexture => TableTextureMode.Metal;
 
         protected override void Initialize()
@@ -65,11 +65,12 @@ namespace CavRn.ScreenPlayers
     }
 
     [Serialized]
-    [LocDisplayName("JukeBox")]
+    [LocDisplayName("Jukebox")]
     [LocDescription("A jukebox to play your favorite songs with your mates.")]
     [Ecopedia("Housing Objects", "Living Room", createAsSubPage: true)]
     [Tag("Housing")]
     [Weight(2000)]
+    [SalvageCost(typeof(BioResidue), 0.4f, typeof(CopperScrap), 3.6f, typeof(GlassScrap), 2.0f, typeof(IronScrap), 4.0f, typeof(WoodScrap), 1.2f)]
     [Tag(nameof(SurfaceTags.CanBeOnSurface))]
     public class JukeBoxItem : WorldObjectItem<JukeBoxObject>, IPersistentData
     {
@@ -96,15 +97,15 @@ namespace CavRn.ScreenPlayers
             var recipe = new Recipe();
             recipe.Init(
                 name: "JukeBox",  //noloc
-                displayName: Localizer.DoStr("JukeBox"),
+                displayName: Localizer.DoStr("Jukebox"),
 
                 ingredients: new List<IngredientElement>
                 {
-                    new IngredientElement("Lumber", 16, typeof(MechanicsSkill)),
-                    new IngredientElement(typeof(CopperWiringItem), 24, typeof(MechanicsSkill)),
-                    new IngredientElement(typeof(ScrewsItem), 32, typeof(MechanicsSkill)),
-                    new IngredientElement(typeof(IronPlateItem), 12, typeof(MechanicsSkill)),
-                    new IngredientElement(typeof(GlassItem), 6, typeof(MechanicsSkill)),
+                    new IngredientElement("Lumber", 8, typeof(MechanicsSkill)),
+                    new IngredientElement(typeof(CopperWiringItem), 6, typeof(MechanicsSkill)),
+                    new IngredientElement(typeof(ScrewsItem), 8, typeof(MechanicsSkill)),
+                    new IngredientElement(typeof(IronPlateItem), 4, typeof(MechanicsSkill)),
+                    new IngredientElement(typeof(GlassItem), 4, typeof(MechanicsSkill)),
                 },
 
                 items: new List<CraftingElement>
@@ -116,9 +117,9 @@ namespace CavRn.ScreenPlayers
 
             this.LaborInCalories = CreateLaborInCaloriesValue(240, typeof(MechanicsSkill));
 
-            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(JukeBoxRecipe), start: 16, skillType: typeof(MechanicsSkill));
+            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(JukeBoxRecipe), start: 8, skillType: typeof(MechanicsSkill));
 
-            this.Initialize(displayText: Localizer.DoStr("JukeBox"), recipeType: typeof(JukeBoxRecipe));
+            this.Initialize(displayText: Localizer.DoStr("Jukebox"), recipeType: typeof(JukeBoxRecipe));
 
             CraftingComponent.AddRecipe(tableType: typeof(AssemblyLineObject), recipeFamily: this);
         }

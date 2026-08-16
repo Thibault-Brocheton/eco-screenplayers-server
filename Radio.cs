@@ -45,6 +45,7 @@ namespace CavRn.ScreenPlayers
         {
             this.GetComponent<PowerConsumptionComponent>().Initialize(10);
             this.GetComponent<PowerGridComponent>().Initialize(10, new MechanicalPower());
+            this.GetComponent<HousingComponent>().HomeValue = RadioItem.homeValue;
             this.GetComponent<MusicComponent>().Initialize(50, 18);
         }
 
@@ -60,11 +61,23 @@ namespace CavRn.ScreenPlayers
     [Serialized]
     [LocDisplayName("Radio")]
     [LocDescription("A radio to play your favorite songs with your mates.")]
+    [Ecopedia("Housing Objects", "Living Room", createAsSubPage: true)]
+    [Tag("Housing")]
     [Weight(500)]
+    [SalvageCost(typeof(CopperScrap), 0.4f, typeof(IronScrap), 1.4f, typeof(WoodScrap), 2.4f)]
     [Tag(nameof(SurfaceTags.CanBeOnSurface))]
     public class RadioItem : WorldObjectItem<RadioObject>, IPersistentData
     {
         protected override OccupancyContext GetOccupancyContext => new SideAttachedContext( 0  | DirectionAxisFlags.Down , WorldObject.GetOccupancyInfo(this.WorldObjectType));
+        public override HomeFurnishingValue HomeValue => homeValue;
+        public static readonly HomeFurnishingValue homeValue = new HomeFurnishingValue()
+        {
+            ObjectName                              = typeof(RadioObject).UILink(),
+            Category                                = HousingConfig.GetRoomCategory("Living Room"),
+            BaseValue                               = 2,
+            TypeForRoomLimit                        = Localizer.DoStr("Music"),
+            DiminishingReturnMultiplier             = 0.1f
+        };
         [Serialized, SyncToView, NewTooltipChildren(CacheAs.Instance, flags: TTFlags.AllowNonControllerTypeForChildren)] public object? PersistentData { get; set; }
         [NewTooltip(CacheAs.SubType, 7)] public static LocString PowerConsumptionTooltip() => Localizer.Do($"Consumes: {Text.Info(10)}w of {new MechanicalPower().Name} power.");
     }
@@ -82,9 +95,9 @@ namespace CavRn.ScreenPlayers
 
                 ingredients: new List<IngredientElement>
                 {
-                    new IngredientElement("WoodBoard", 8, typeof(BasicEngineeringSkill)),
-                    new IngredientElement(typeof(IronBarItem), 4, typeof(BasicEngineeringSkill)),
-                    new IngredientElement(typeof(IronPipeItem), 4, typeof(BasicEngineeringSkill)),
+                    new IngredientElement("WoodBoard", 6, typeof(BasicEngineeringSkill)),
+                    new IngredientElement(typeof(IronBarItem), 2, typeof(BasicEngineeringSkill)),
+                    new IngredientElement(typeof(IronPipeItem), 2, typeof(BasicEngineeringSkill)),
                     new IngredientElement(typeof(CopperBarItem), 2, typeof(BasicEngineeringSkill)),
                 },
 

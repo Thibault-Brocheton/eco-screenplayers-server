@@ -289,7 +289,6 @@
         [Authorize(Policy = PolicyNames.RequireAdmin)]
         public ActionResult<List<VideoAudioFileDto>> ValidateFile(Guid fileId)
         {
-            var user = this.GetUserFromContext();
             var file = ScreenPlayersPlugin.Files.FirstOrDefault(f => f.Id == fileId);
             if (file == null)
                 return this.NotFound();
@@ -332,7 +331,7 @@
             if (file == null || file.Length == 0)
                 return this.BadRequest("Missing file.");
 
-            long maxBytes = ScreenPlayersPlugin.Obj.Config.MaxFileSizeInMB * 1024 * 1024;
+            long maxBytes = ScreenPlayersPlugin.Obj.Config.MaxFileSizeInMB * 1024L * 1024L;
             if (file.Length > maxBytes)
                 return this.BadRequest($"File too large (max {ScreenPlayersPlugin.Obj.Config.MaxFileSizeInMB} MB).");
 

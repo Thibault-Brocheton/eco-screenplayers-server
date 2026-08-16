@@ -22,12 +22,12 @@ namespace CavRn.ScreenPlayers
     public interface IScreenPlayersService
     {
         bool AllowOnlyLocalUrl { get; }
-        string GetWebServerBaseUrl();
+        string? GetWebServerBaseUrl();
     }
 
     public static class ScreenPlayersRegistry
     {
-        public static IScreenPlayersService Obj;
+        public static IScreenPlayersService? Obj;
     }
 
     [Serialized]
@@ -35,7 +35,7 @@ namespace CavRn.ScreenPlayers
     {
         #region IController
         #pragma warning disable CS0067
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
         int            controllerID;
         public ref int ControllerID => ref this.controllerID;
         #endregion
@@ -46,7 +46,7 @@ namespace CavRn.ScreenPlayers
 
         public bool HasDataThatCanBeCleared => this.Url != "";
 
-        public VideoBaseWithoutInteractionComponent Parent { get; set; }
+        public VideoBaseWithoutInteractionComponent? Parent { get; set; }
 
         public Result TryHandleClearRequest(Player player)
         {
@@ -114,7 +114,7 @@ namespace CavRn.ScreenPlayers
                 }
 
                 this.VideoBaseItemData.Url = nextValue;
-				this.Parent.SetAnimatedState("URL", nextValue);
+                this.Parent.SetAnimatedState("URL", nextValue);
             }
         }
 
