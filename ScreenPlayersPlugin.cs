@@ -386,7 +386,7 @@
                     {
                         StartInfo = new ProcessStartInfo
                         {
-                            FileName = "ffmpeg",
+                            FileName = ScreenPlayersPlugin.Obj.Config.FfmpegPath,
                             Arguments = args,
                             CreateNoWindow = true,
                             UseShellExecute = false
