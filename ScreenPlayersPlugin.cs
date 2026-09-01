@@ -27,6 +27,7 @@
         public bool AllowOnlyLocalUrl { get; set; } = false;
         public int MaxUploadPerUser { get; set; } = 5;
         public int MaxFileSizeInMB { get; set; } = 15;
+        public string FfmpegPath { get; set; } = "ffmpeg";
     }
 
     public class ScreenPlayersPlugin : Singleton<ScreenPlayersPlugin>, IWebPlugin, IModKitPlugin, IInitializablePlugin, IShutdownablePlugin, IConfigurablePlugin
